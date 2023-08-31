@@ -1,0 +1,39 @@
+# 参考：https://github.com/CCKNBC/CCKNBC
+# Actions1：https://github.com/marketplace/actions/delete-workflow-runs
+# Actions2：https://github.com/marketplace/actions/blog-post-workflow
+name: update blog
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: gautamkrishnar/blog-post-workflow@master
+      with:
+        feed_list: "https://zhsher.cn/feed.xml"
+        max_post_count: 5
+        readme_path: "./README.md"
+        template: "$newline - $emojiKey(💯,🔥,💫,🚀,🌮,💫) $date [$title]($url)"
+        date_format: "yyyy年mm月dd日"
+        committer_username: "github-actions[bot]"
+        committer_email: "github-actions[bot]@users.noreply.github.com"
+        # filter_dates: "currentYear"
+   
+    - name: Result
+      run: |-
+        cat README.md
+        
+    - name: Delete Workflow Runs
+      uses: Mattraks/delete-workflow-runs@main
+      with:
+        retain_days: 10
+        keep_minimum_runs: 1
